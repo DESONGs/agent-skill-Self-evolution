@@ -29,14 +29,21 @@ kernel = [
 asp = "agent_skill_platform.cli:main"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
 include-package-data = true
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = [
+  "integration/src/python",
+  "contracts/src/python",
+  "runtime/src/python",
+  "lab/src/python",
+  "factory/src/python",
+]
 
 [tool.setuptools.package-data]
 autoresearch_agent = ["packs/**/*.yaml", "packs/**/*.txt", "packs/**/*.md", "packs/**/*.json", "packs/**/*.j2", "packs/**/*.py"]
+skill_retriever = ["capability_tree/**/*.yaml", "capability_tree/**/*.html"]
+web = ["static/**/*", "templates/**/*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "integration/tests"]

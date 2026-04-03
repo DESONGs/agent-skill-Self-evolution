@@ -1,0 +1,15 @@
+{
+  "platform": "generic",
+  "canonical_metadata": "agents/interface.yaml",
+  "required_generated_file": "targets/generic/adapter.json",
+  "required_fields": [
+    "canonical_format",
+    "activation_mode",
+    "execution_context",
+    "shell",
+    "trust_level",
+    "remote_inline_execution",
+    "degradation_strategy",
+    "portability_profile"
+  ]
+}
