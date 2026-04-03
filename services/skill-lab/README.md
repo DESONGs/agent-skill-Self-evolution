@@ -1,10 +1,13 @@
 # Skill Lab
 
-这一层聚合的是 vendored `loomiai-autoresearch` skill research 代码：
+这一层对应 skill lab / research pipeline 主源码。
 
-- `../../vendor/autoresearch/src/autoresearch_agent/`
+源码位置：
 
-当前统一入口：
-
-- `../../src/agent_skill_platform/lab.py`
+- `../../src/autoresearch_agent/`
+- `../../src/agent_skill_platform/lab/`
 - `../../src/agent_skill_platform/models.py`
+
+冻结主接口：
+
+- `PromotionSubmission`

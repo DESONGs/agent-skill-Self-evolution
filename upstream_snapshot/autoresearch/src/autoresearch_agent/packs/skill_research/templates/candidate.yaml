@@ -1,0 +1,122 @@
+schema_version: skill.candidate.v1
+
+candidate:
+  id: ${CANDIDATE_ID}
+  slug: ${CANDIDATE_SLUG}
+  title: ${CANDIDATE_TITLE}
+  source_kind: ${SOURCE_KIND}
+  created_at: ${CREATED_AT}
+  status: normalized
+  editable_target: workspace/candidate.yaml
+
+sources:
+  refs: []
+  normalized_summary:
+    recurring_job: ${RECURRING_JOB}
+    outputs:
+      - generated package
+      - gate summary
+      - submission bundle
+    exclusions:
+      - runtime execution internals
+      - registry schema internals
+    evidence_tags: []
+
+qualification:
+  should_be_skill: true
+  reasons:
+    - recurring_workflow
+    - routing_risk
+    - governance_matters
+  target_user: ${TARGET_USER}
+  problem_statement: ${PROBLEM_STATEMENT}
+
+skill:
+  name: ${SKILL_NAME}
+  description: ${SKILL_DESCRIPTION}
+  trigger_description: ${TRIGGER_DESCRIPTION}
+  anti_triggers:
+    - one-off explanation
+    - translation only
+    - brainstorm only
+  boundary:
+    owns:
+      - skill packaging
+      - trigger routing
+      - eval bundle generation
+    does_not_own:
+      - runtime execution internals
+      - registry schema internals
+  workflow:
+    inputs:
+      - candidate spec
+      - source refs
+      - gate cases
+    steps:
+      - normalize
+      - materialize
+      - evaluate
+      - promote
+    outputs:
+      - generated package
+      - gate summary
+      - submission bundle
+
+actions:
+  default_action: ${DEFAULT_ACTION}
+  items:
+    - id: materialize_package
+      kind: script
+      entry: scripts/materialize_package.py
+      runtime: python3
+      timeout_sec: 120
+      sandbox: workspace-write
+    - id: evaluate_package
+      kind: script
+      entry: scripts/evaluate_package.py
+      runtime: python3
+      timeout_sec: 120
+      sandbox: workspace-write
+
+package:
+  target_platforms:
+    - openai
+    - claude
+    - generic
+  include_references: true
+  include_scripts: true
+  include_evals: true
+  include_reports: false
+  layout_profile: standard_skill_package
+
+governance:
+  owner: ${OWNER}
+  maturity_tier: production
+  lifecycle_stage: library
+  review_cadence: quarterly
+  context_budget_tier: production
+  risk_level: medium
+  trust:
+    source_tier: local
+    remote_inline_execution: forbid
+    remote_metadata_policy: allow-metadata-only
+
+lab:
+  pack_id: skill_research
+  gate_profile: balanced
+  mutation_axes:
+    - trigger_description
+    - anti_triggers
+    - boundary
+    - actions
+    - eval_coverage
+    - governance
+  baseline_refs: []
+  metrics: {}
+  last_run_id: ""
+
+promotion:
+  state: draft
+  mode: automatic_or_manual
+  submission_bundle: ""
+  published_skill_ref: ""

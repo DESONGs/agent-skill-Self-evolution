@@ -7,8 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .bootstrap import ensure_vendor_paths
-
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -71,7 +69,6 @@ class PromotionSubmission:
 
     @classmethod
     def from_skill_lab_run(cls, project_root: str | Path, run_id: str) -> "PromotionSubmission":
-        ensure_vendor_paths()
         from autoresearch_agent.cli.runtime import submit_promotion
         from autoresearch_agent.core.runtime import RuntimeManager
 

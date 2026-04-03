@@ -10,4 +10,7 @@ build/
 
 # runtime outputs
 .autoresearch/
+.data/
+.tmp-smoke-*/
 artifacts/
+runs/

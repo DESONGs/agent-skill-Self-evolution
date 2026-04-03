@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from .contracts import build_source_bundle, load_skill_package, materialize_runtime_install, validate_skill_package
+from .kernel import create_kernel_engine, create_kernel_manager, get_engine_execution_meta, list_engines, list_plugins
 from .lab import (
     build_promotion_submission,
     get_skill_lab_run_artifacts,
@@ -12,8 +13,10 @@ from .lab import (
     run_skill_lab_project,
     validate_skill_lab_project,
 )
+from .models import PromotionSubmission
 from .paths import PlatformPaths, detect_platform_paths
-from .runtime import build_runtime_install_bundle, hydrate_runtime_install
+from .registry import build_registry_app, ingest_feedback, open_registry, publish_package, resolve_install_bundle, submit_promotion
+from .runtime import build_runtime_install_bundle, hydrate_runtime_install, run_runtime
 
 
 class AgentSkillPlatform:
@@ -39,6 +42,31 @@ class AgentSkillPlatform:
     def hydrate_install(self, package_root: str | Path, *, install_root: str | Path, install_id: str | None = None) -> Any:
         return hydrate_runtime_install(package_root, install_root=install_root, install_id=install_id)
 
+    def run_runtime(
+        self,
+        package_root: str | Path,
+        *,
+        action_id: str | None = None,
+        action_input: Any = None,
+        workspace_dir: str | Path | None = None,
+        run_id: str | None = None,
+        install_root: str | Path | None = None,
+        env: dict[str, str] | None = None,
+        max_sandbox: str | None = None,
+        allow_network: bool = False,
+    ) -> dict[str, Any]:
+        return run_runtime(
+            package_root,
+            action_id=action_id,
+            action_input=action_input,
+            workspace_dir=workspace_dir,
+            run_id=run_id,
+            install_root=install_root,
+            env=env,
+            max_sandbox=max_sandbox,
+            allow_network=allow_network,
+        )
+
     def init_skill_lab_project(self, project_root: str | Path, *, project_name: str | None = None, overwrite: bool = False) -> dict[str, Any]:
         return init_skill_lab_project(project_root, project_name=project_name, overwrite=overwrite)
 
@@ -54,5 +82,52 @@ class AgentSkillPlatform:
     def get_skill_lab_run_artifacts(self, project_root: str | Path, run_id: str) -> list[dict[str, Any]]:
         return get_skill_lab_run_artifacts(project_root, run_id)
 
-    def build_promotion_submission(self, project_root: str | Path, run_id: str):
+    def build_promotion_submission(self, project_root: str | Path, run_id: str) -> PromotionSubmission:
         return build_promotion_submission(project_root, run_id)
+
+    def registry_root(self) -> Path:
+        root = self.paths.data_root / "registry"
+        root.mkdir(parents=True, exist_ok=True)
+        return root
+
+    def publish_package(self, source: str | Path, *, registry_root: str | Path | None = None) -> dict[str, Any]:
+        return publish_package(registry_root or self.registry_root(), source)
+
+    def resolve_install_bundle(
+        self,
+        skill_id: str,
+        *,
+        version_id: str | None = None,
+        registry_root: str | Path | None = None,
+    ) -> dict[str, Any]:
+        return resolve_install_bundle(registry_root or self.registry_root(), skill_id, version_id=version_id)
+
+    def ingest_feedback(self, envelope: Any, *, registry_root: str | Path | None = None) -> dict[str, Any]:
+        return ingest_feedback(registry_root or self.registry_root(), envelope)
+
+    def submit_promotion(self, submission: PromotionSubmission | dict[str, Any], *, registry_root: str | Path | None = None) -> dict[str, Any]:
+        return submit_promotion(registry_root or self.registry_root(), submission)
+
+    def build_registry_app(self, *, registry_root: str | Path | None = None) -> Any:
+        return build_registry_app(registry_root or self.registry_root())
+
+    def list_registry_skills(self, *, registry_root: str | Path | None = None) -> list[dict[str, Any]]:
+        return open_registry(registry_root or self.registry_root()).list_skills()
+
+    def get_registry_skill(self, skill_id: str, *, registry_root: str | Path | None = None) -> dict[str, Any]:
+        return open_registry(registry_root or self.registry_root()).get_skill(skill_id)
+
+    def list_kernel_plugins(self) -> dict[str, Any]:
+        return list_plugins()
+
+    def list_kernel_engines(self) -> list[str]:
+        return list_engines()
+
+    def get_kernel_engine_execution_meta(self, name: str) -> dict[str, Any]:
+        return get_engine_execution_meta(name)
+
+    def create_kernel_manager(self, name: str | None = None, **kwargs: Any) -> Any:
+        return create_kernel_manager(name=name, **kwargs)
+
+    def create_kernel_engine(self, name: str, **kwargs: Any) -> Any:
+        return create_kernel_engine(name=name, **kwargs)

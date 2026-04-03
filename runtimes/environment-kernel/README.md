@@ -1,13 +1,16 @@
 # Environment Kernel
 
-这一层当前只保留结构位和后续对接口径。
+这一层对应 environment kernel 主源码。
 
-当前已被合拢的运行时能力主要是：
+源码位置：
 
-- install contract
-- action resolve
-- run feedback envelope
+- `../../src/manager/`
+- `../../src/orchestrator/`
+- `../../src/workflow/`
+- `../../src/agent_skill_platform/kernel/`
 
-对应 facade：
+当前仓内已经内聚的核心能力：
 
-- `../../src/agent_skill_platform/runtime.py`
+- manager / engine registry discovery
+- direct / freestyle / dag execution mode 装配
+- execution metadata 与 kernel facade

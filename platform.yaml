@@ -1,6 +1,6 @@
 schema_version: agent.skill.platform.workspace.v1
 name: agent-skill-platform
-status: standalone-merged
+status: standalone-monorepo
 interfaces:
   - actions.yaml
   - RuntimeInstallBundle
@@ -9,24 +9,30 @@ interfaces:
 modules:
   skill_contracts:
     owner: Track A
-    facade: src/agent_skill_platform/contracts.py
-    vendored_paths:
-      - vendor/agentskillos/src/skill_contract
+    source_root: src/skill_contract
+    public_api: src/agent_skill_platform/contracts
   runtime:
     owner: Track C
-    facade: src/agent_skill_platform/runtime.py
-    vendored_paths:
-      - vendor/agentskillos/src/orchestrator/runtime
-      - vendor/agentskillos/src/config.py
-      - vendor/agentskillos/src/constants.py
+    source_root: src/orchestrator/runtime
+    public_api: src/agent_skill_platform/runtime
+  environment_kernel:
+    owner: Track C
+    source_root:
+      - src/manager
+      - src/orchestrator
+      - src/workflow
+    public_api: src/agent_skill_platform/kernel
   skill_lab:
     owner: Track D
-    facade: src/agent_skill_platform/lab.py
-    vendored_paths:
-      - vendor/autoresearch/src/autoresearch_agent
+    source_root: src/autoresearch_agent
+    public_api: src/agent_skill_platform/lab
   registry:
     owner: Track B
-    notes_path: services/skill-registry/README.md
+    source_root: src/agent_skill_platform/registry
+    storage_root: .data/registry
+upstream_snapshot:
+  root: upstream_snapshot
+  purpose: reference-only
 docs:
   root: docs
   engineering: docs/engineering

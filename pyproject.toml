@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-skill-platform"
@@ -9,19 +9,34 @@ description = "Standalone merged workspace for skill contracts, runtime install/
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+  "fastapi>=0.115.0",
   "pydantic>=2.0.0",
   "PyYAML>=6.0.0",
   "python-dotenv>=1.0.0",
+  "uvicorn>=0.30.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0.0"]
+kernel = [
+  "chromadb>=0.5.0",
+  "litellm>=1.51.0",
+  "loguru>=0.7.0",
+  "rich>=13.0.0",
+]
 
 [project.scripts]
 asp = "agent_skill_platform.cli:main"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/agent_skill_platform"]
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+autoresearch_agent = ["packs/**/*.yaml", "packs/**/*.txt", "packs/**/*.md", "packs/**/*.json", "packs/**/*.j2", "packs/**/*.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

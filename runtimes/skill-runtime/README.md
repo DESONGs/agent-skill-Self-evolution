@@ -1,9 +1,13 @@
 # Skill Runtime
 
-这一层聚合的是 vendored `AgentSkillOS` runtime 代码：
+这一层对应 skill runtime 主源码。
 
-- `../../vendor/agentskillos/src/orchestrator/runtime/`
+源码位置：
 
-当前统一入口：
+- `../../src/orchestrator/runtime/`
+- `../../src/agent_skill_platform/runtime/`
 
-- `../../src/agent_skill_platform/runtime.py`
+冻结主接口：
+
+- `RuntimeInstallBundle`
+- `RunFeedbackEnvelope`
