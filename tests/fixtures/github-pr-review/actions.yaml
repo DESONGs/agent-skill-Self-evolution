@@ -1,0 +1,36 @@
+schema_version: actions.v1
+actions:
+  - id: run
+    kind: script
+    entry: scripts/run.py
+    runtime: python3
+    timeout_sec: 120
+    sandbox: workspace-write
+    allow_network: false
+    input_schema:
+      type: object
+      properties:
+        task:
+          type: string
+      required:
+        - task
+    output_schema:
+      type: object
+      properties:
+        summary:
+          type: string
+        artifacts:
+          type: array
+    side_effects:
+      - writes_workspace
+      - writes_report
+    idempotency: best_effort
+  - id: validate
+    kind: script
+    entry: scripts/validate.py
+    runtime: python3
+    timeout_sec: 30
+    sandbox: read-only
+    allow_network: false
+    side_effects: []
+    idempotency: exact

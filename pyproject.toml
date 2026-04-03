@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-skill-platform"
+version = "0.1.0"
+description = "Standalone merged workspace for skill contracts, runtime install/feedback, and skill lab."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic>=2.0.0",
+  "PyYAML>=6.0.0",
+  "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+asp = "agent_skill_platform.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_skill_platform"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

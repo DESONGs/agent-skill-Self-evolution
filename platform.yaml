@@ -1,0 +1,32 @@
+schema_version: agent.skill.platform.workspace.v1
+name: agent-skill-platform
+status: standalone-merged
+interfaces:
+  - actions.yaml
+  - RuntimeInstallBundle
+  - RunFeedbackEnvelope
+  - PromotionSubmission
+modules:
+  skill_contracts:
+    owner: Track A
+    facade: src/agent_skill_platform/contracts.py
+    vendored_paths:
+      - vendor/agentskillos/src/skill_contract
+  runtime:
+    owner: Track C
+    facade: src/agent_skill_platform/runtime.py
+    vendored_paths:
+      - vendor/agentskillos/src/orchestrator/runtime
+      - vendor/agentskillos/src/config.py
+      - vendor/agentskillos/src/constants.py
+  skill_lab:
+    owner: Track D
+    facade: src/agent_skill_platform/lab.py
+    vendored_paths:
+      - vendor/autoresearch/src/autoresearch_agent
+  registry:
+    owner: Track B
+    notes_path: services/skill-registry/README.md
+docs:
+  root: docs
+  engineering: docs/engineering

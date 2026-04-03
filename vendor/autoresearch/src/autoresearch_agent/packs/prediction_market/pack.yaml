@@ -1,0 +1,79 @@
+{
+  "schema_version": "pack.manifest.v1",
+  "pack_id": "prediction_market",
+  "name": "Prediction Market",
+  "version": "0.1.0",
+  "description": "First research pack for calibrated prediction-market iteration.",
+  "domain": "prediction_market",
+  "entry_profile": "default",
+  "supported_formats": ["json", "csv"],
+  "default_adapter": "canonical_json",
+  "default_objective": "maximize_pnl",
+  "axes_catalog": {
+    "confidence_threshold": {
+      "type": "float",
+      "default": 0.75,
+      "minimum": 0.55,
+      "maximum": 0.85,
+      "step": 0.02,
+      "description": "Decision threshold for translating LLM confidence into a trade."
+    },
+    "bet_sizing": {
+      "type": "enum",
+      "default": "confidence_scaled",
+      "values": ["fixed", "confidence_scaled", "kelly"],
+      "description": "How to size the bet after the model emits a prediction."
+    },
+    "max_bet_fraction": {
+      "type": "float",
+      "default": 0.15,
+      "minimum": 0.05,
+      "maximum": 0.20,
+      "step": 0.01,
+      "description": "Upper bound on bankroll fraction per trade."
+    },
+    "prompt_factors": {
+      "type": "list[string]",
+      "default": [],
+      "values": [
+        "extreme_price_skepticism",
+        "evidence_balance",
+        "volume_awareness",
+        "event_type_branching"
+      ],
+      "description": "Prompt-level behavior toggles available to the user."
+    }
+  },
+  "editable_targets": ["workspace/strategy.py"],
+  "entrypoints": {
+    "adapter_module": "autoresearch_agent.packs.prediction_market.adapters",
+    "evaluator_module": "autoresearch_agent.packs.prediction_market.evaluators.prediction_market",
+    "strategy_template": "templates/strategy.py",
+    "prompts_dir": "prompts",
+    "research_template": "templates/research.yaml"
+  },
+  "defaults": {
+    "research_template": "templates/research.yaml",
+    "constraints": {
+      "total_token_budget": 0,
+      "per_eval_token_budget": 150000,
+      "max_completion_tokens": 1200,
+      "eval_timeout_seconds": 900,
+      "retention_hours": 168
+    },
+    "evaluation": {
+      "sample_size": 200,
+      "search_repeats": 2,
+      "validation_repeats": 2,
+      "holdout_repeats": 1,
+      "gate_profile": "balanced"
+    }
+  },
+  "security": {
+    "allowed_env_refs": ["OPENAI_API_KEY", "OPENAI_BASE_URL", "MOONSHOT_API_KEY"],
+    "allowed_secret_refs": []
+  },
+  "compatibility": {
+    "min_agent_version": "0.1.0"
+  }
+}

@@ -1,0 +1,27 @@
+---
+name: ${SKILL_NAME}
+description: ${TRIGGER_DESCRIPTION}
+metadata:
+  author: ${OWNER}
+  philosophy: "structured skill design, eval gates, governance, and portable packaging"
+---
+
+# ${SKILL_NAME}
+
+Build reusable skill packages, not long prompts.
+
+## Router Rules
+
+- Route by frontmatter `description` first.
+- Keep `SKILL.md` to routing plus the minimal execution skeleton.
+- Push long guidance to `references/`, deterministic logic to `scripts/`, and evidence to `reports/`.
+
+## Boundary
+
+- Owns: ${BOUNDS_OWNS}
+- Does not own: ${BOUNDS_NOT_OWNS}
+
+## Output Contract
+
+- ${OUTPUT_CONTRACT}
+

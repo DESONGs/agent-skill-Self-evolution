@@ -1,0 +1,15 @@
+{
+  "name": "github-pr-review",
+  "version": "1.0.0",
+  "owner": "platform-agent-team",
+  "updated_at": "2026-04-02",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "library",
+  "context_budget_tier": "production",
+  "review_cadence": "quarterly",
+  "target_platforms": ["openai", "claude", "generic"],
+  "factory_components": ["references", "scripts", "evals"],
+  "risk_level": "medium",
+  "default_runtime_profile": "python311-safe"
+}

@@ -1,0 +1,18 @@
+Analyze this prediction market:
+
+Question: {question}
+Outcomes: {outcomes}
+Last trade price (probability of outcome[0]): {last_trade_price}
+Volume: {volume_usd}
+Category: {category}
+Event: {event_title}
+{price_signals_text}
+
+Focus checklist:
+- Treat extreme prices as potentially stale or overconfident if evidence is weak.
+- Balance supporting and disconfirming evidence before finalizing the prediction.
+- Treat low-volume markets as noisier and use volume as a reliability signal.
+- Use the market category and event type as a branching cue for what evidence matters most.
+
+Reply with JSON only:
+{"prediction": 0 or 1, "confidence": 0.0 to 1.0, "thinking": "2-3 sentences on your analysis logic", "reasoning": "one-line conclusion"}

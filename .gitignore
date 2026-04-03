@@ -1,0 +1,13 @@
+__pycache__/
+.pytest_cache/
+.DS_Store
+.venv/
+dist/
+build/
+*.pyc
+*.pyo
+*.pyd
+
+# runtime outputs
+.autoresearch/
+artifacts/
