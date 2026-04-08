@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from .actions import ActionManifest, parse_actions_yaml
+from .profiles import infer_skill_type, normalize_skill_type
 
 
 class InstallContractError(ValueError):
@@ -56,6 +57,17 @@ def _read_manifest_version(root: Path) -> str | None:
     return str(version) if version else None
 
 
+def _read_manifest_payload(root: Path) -> dict[str, Any]:
+    manifest_path = root / "manifest.json"
+    if not manifest_path.exists():
+        return {}
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 @dataclass(frozen=True)
 class RuntimeInstallBundle:
     """Registry-facing install payload, resolved locally for runtime use."""
@@ -66,6 +78,7 @@ class RuntimeInstallBundle:
     bundle_sha256: str
     bundle_size: int
     actions: ActionManifest
+    skill_type: str = "script"
     default_action: str | None = None
     source_uri: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -98,6 +111,8 @@ class RuntimeInstallBundle:
             raise InstallContractError(f"Missing actions.yaml in package root: {root}.{compat_note}")
 
         actions = parse_actions_yaml(actions_path)
+        manifest_payload = _read_manifest_payload(root)
+        inferred_skill_type = infer_skill_type(manifest_payload, actions.actions)
 
         inferred_skill_id = skill_id or root.name
         inferred_version_id = version_id or _read_manifest_version(root)
@@ -109,12 +124,14 @@ class RuntimeInstallBundle:
             bundle_sha256=_sha256_dir(root),
             bundle_size=inferred_bundle_size,
             actions=actions,
+            skill_type=normalize_skill_type(inferred_skill_type),
             default_action=actions.default_action or (actions.action_ids()[0] if actions.actions else None),
             source_uri=str(root),
             metadata={
                 "created_at": _utc_now(),
                 "manifest_version": inferred_version_id,
                 "actions_contract_required": True,
+                "skill_type": normalize_skill_type(inferred_skill_type),
             },
         )
         bundle.validate()
@@ -138,6 +155,7 @@ class RuntimeInstallBundle:
             "bundle_root": str(self.bundle_root),
             "bundle_sha256": self.bundle_sha256,
             "bundle_size": self.bundle_size,
+            "skill_type": self.skill_type,
             "default_action": self.default_action,
             "source_uri": self.source_uri,
             "actions": self.actions.to_dict(),
@@ -218,6 +236,7 @@ class SkillInstall:
     package: LocalSkillPackage
     install_root: Path
     mounted_path: Path
+    skill_type: str = "script"
     copied_files: tuple[str, ...] = field(default_factory=tuple)
     created_at: str = field(default_factory=_utc_now)
     mode: str = "run"
@@ -230,6 +249,7 @@ class SkillInstall:
             "package": self.package.to_dict(),
             "install_root": str(self.install_root),
             "mounted_path": str(self.mounted_path),
+            "skill_type": self.skill_type,
             "copied_files": list(self.copied_files),
             "created_at": self.created_at,
             "mode": self.mode,
@@ -289,12 +309,14 @@ def hydrate_skill_install(
         package=local_package,
         install_root=install_dir,
         mounted_path=mounted_path,
+        skill_type=normalize_skill_type(local_package.bundle.skill_type),
         copied_files=copied_files,
         metadata={
             "bundle_sha256": local_package.bundle.bundle_sha256,
             "bundle_size": local_package.bundle.bundle_size,
             "version_id": local_package.bundle.version_id,
             "default_action": local_package.bundle.default_action,
+            "skill_type": normalize_skill_type(local_package.bundle.skill_type),
         },
     )
     return install

@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+from .profiles import profile_for_skill_type
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -309,6 +311,29 @@ class RunFeedbackEnvelope:
         result_metadata = dict(getattr(result, "metadata", {}) or {})
         if not token_usage and isinstance(result_metadata.get("token_usage"), dict):
             token_usage = dict(result_metadata["token_usage"])
+        payload_metadata = dict(result_metadata)
+        payload_metadata.update(dict(metadata or {}))
+        skill_type = getattr(resolved_action, "skill_type", None) or result_metadata.get("skill_type")
+        if skill_type:
+            payload_metadata.setdefault("skill_type", skill_type)
+            profile = result_metadata.get("profile")
+            if isinstance(profile, dict):
+                payload_metadata.setdefault("profile", profile)
+                profile_skill_type = profile.get("skill_type") or skill_type
+                if "tool_surface" not in payload_metadata:
+                    tool_surface = profile.get("allowed_tools")
+                    if not isinstance(tool_surface, list):
+                        tool_surface = profile.get("policy", {}).get("tool_surface") if isinstance(profile.get("policy"), dict) else None
+                    if not isinstance(tool_surface, list):
+                        tool_surface = list(profile_for_skill_type(profile_skill_type).allowed_tools)
+                    payload_metadata.setdefault("tool_surface", list(tool_surface))
+            elif "tool_surface" not in payload_metadata:
+                payload_metadata.setdefault("tool_surface", list(profile_for_skill_type(skill_type).allowed_tools))
+        executor_name = result_metadata.get("executor") or result_metadata.get("runner_name")
+        if executor_name:
+            payload_metadata.setdefault("executor", executor_name)
+        elif skill_type:
+            payload_metadata.setdefault("executor", profile_for_skill_type(skill_type).executor_name)
 
         return cls(
             run_id=run_id,
@@ -322,5 +347,5 @@ class RunFeedbackEnvelope:
             artifact_count=len(getattr(result, "artifacts", ()) or ()),
             error_code=getattr(result, "error_code", None) or result_metadata.get("error_code"),
             layer_source=layer_source,
-            metadata=dict(metadata or {}),
+            metadata=payload_metadata,
         )

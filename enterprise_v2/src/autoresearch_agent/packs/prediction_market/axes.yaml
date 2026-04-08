@@ -1,0 +1,31 @@
+{
+  "confidence_threshold": {
+    "type": "float",
+    "default": 0.75,
+    "minimum": 0.55,
+    "maximum": 0.85,
+    "step": 0.02
+  },
+  "bet_sizing": {
+    "type": "enum",
+    "default": "confidence_scaled",
+    "values": ["fixed", "confidence_scaled", "kelly"]
+  },
+  "max_bet_fraction": {
+    "type": "float",
+    "default": 0.15,
+    "minimum": 0.05,
+    "maximum": 0.20,
+    "step": 0.01
+  },
+  "prompt_factors": {
+    "type": "list[string]",
+    "default": [],
+    "values": [
+      "extreme_price_skepticism",
+      "evidence_balance",
+      "volume_awareness",
+      "event_type_branching"
+    ]
+  }
+}

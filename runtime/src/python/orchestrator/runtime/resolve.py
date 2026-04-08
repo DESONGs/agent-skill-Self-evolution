@@ -12,7 +12,9 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .actions import ActionContractError, ActionKind, ActionManifest, ActionSpec
+from .execution import build_action_catalog
 from .install import LocalSkillPackage, RuntimeInstallBundle, SkillInstall, hydrate_skill_install
+from .profiles import normalize_skill_type
 
 
 class ActionResolutionError(ValueError):
@@ -120,6 +122,8 @@ class ResolvedAction:
     metadata: dict[str, Any] = field(default_factory=dict)
     is_default: bool = False
     spec: ActionSpec | None = None
+    action_catalog: tuple[dict[str, Any], ...] = ()
+    skill_type: str = "script"
 
     @property
     def entry_path(self) -> Path | None:
@@ -132,6 +136,7 @@ class ResolvedAction:
             "install_id": self.install_id,
             "skill_id": self.skill_id,
             "version_id": self.version_id,
+            "skill_type": self.skill_type,
             "action_id": self.action_id,
             "kind": self.kind.value,
             "runner_name": self.runner_name,
@@ -188,7 +193,8 @@ class ActionResolver:
         action_id: str | None = None,
     ) -> ResolvedAction:
         manifest = install.action_manifest
-        candidate_id = action_id or install.selected_action or manifest.default_action
+        default_action_id = install.package.bundle.default_action or manifest.default_action
+        candidate_id = action_id or install.selected_action or default_action_id
         if not candidate_id:
             raise ActionResolutionError(f"No default action available for install {install.install_id!r}")
 
@@ -202,12 +208,14 @@ class ActionResolver:
         self._validate_spec(spec, install)
         runner_name = self._runner_name(spec)
         runner_config = _extract_runner_config(spec)
-        is_default = candidate_id == manifest.default_action
+        is_default = candidate_id == default_action_id
+        skill_type = normalize_skill_type(install.skill_type)
 
         return ResolvedAction(
             install_id=install.install_id,
             skill_id=install.package.bundle.skill_id,
             version_id=install.package.bundle.version_id,
+            skill_type=skill_type,
             action_id=spec.id,
             kind=spec.kind,
             runner_name=runner_name,
@@ -224,9 +232,10 @@ class ActionResolver:
             install_root=install.install_root,
             mounted_path=install.mounted_path,
             runner_config=runner_config,
-            metadata=dict(install.metadata),
+            metadata={**dict(install.metadata), "skill_type": skill_type},
             is_default=is_default,
             spec=spec,
+            action_catalog=tuple(dict(item) for item in build_action_catalog([install])),
         )
 
     def catalog(

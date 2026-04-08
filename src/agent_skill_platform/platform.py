@@ -3,7 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from .bootstrap import ensure_source_layout
 from .contracts import build_source_bundle, load_skill_package, materialize_runtime_install, validate_skill_package
+from .factory import build_candidate_payload, prepare_candidate_for_lab, run_factory_pipeline
 from .kernel import create_kernel_engine, create_kernel_manager, get_engine_execution_meta, list_engines, list_plugins
 from .lab import (
     build_promotion_submission,
@@ -16,7 +18,10 @@ from .lab import (
 from .models import PromotionSubmission
 from .paths import PlatformPaths, detect_platform_paths
 from .registry import build_registry_app, ingest_feedback, open_registry, publish_package, resolve_install_bundle, submit_promotion
+from .engine import build_engine_app, execute_skill as execute_skill_request, find_skill as find_skill_request, open_engine
 from .runtime import build_runtime_install_bundle, hydrate_runtime_install, run_runtime
+
+ensure_source_layout()
 
 
 class AgentSkillPlatform:
@@ -82,13 +87,82 @@ class AgentSkillPlatform:
     def get_skill_lab_run_artifacts(self, project_root: str | Path, run_id: str) -> list[dict[str, Any]]:
         return get_skill_lab_run_artifacts(project_root, run_id)
 
-    def build_promotion_submission(self, project_root: str | Path, run_id: str) -> PromotionSubmission:
-        return build_promotion_submission(project_root, run_id)
+    def build_promotion_submission(
+        self,
+        project_root: str | Path,
+        run_id: str,
+        *,
+        lineage: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> PromotionSubmission:
+        return build_promotion_submission(project_root, run_id, lineage=lineage, metadata=metadata)
 
     def registry_root(self) -> Path:
         root = self.paths.data_root / "registry"
         root.mkdir(parents=True, exist_ok=True)
         return root
+
+    def registry_server_root(self) -> Path:
+        return self.paths.registry_root_dir / "server"
+
+    def build_candidate_payload(
+        self,
+        *,
+        skill_name: str,
+        workflow: dict[str, Any] | None = None,
+        transcript: dict[str, Any] | None = None,
+        failure: dict[str, Any] | None = None,
+        owner: str = "agent-skill-platform",
+    ) -> dict[str, Any]:
+        return build_candidate_payload(
+            skill_name=skill_name,
+            workflow=workflow,
+            transcript=transcript,
+            failure=failure,
+            owner=owner,
+        )
+
+    def prepare_candidate_for_lab(
+        self,
+        project_root: str | Path,
+        *,
+        skill_name: str,
+        workflow: dict[str, Any] | None = None,
+        transcript: dict[str, Any] | None = None,
+        failure: dict[str, Any] | None = None,
+        owner: str = "agent-skill-platform",
+        overwrite: bool = True,
+    ) -> dict[str, Any]:
+        return prepare_candidate_for_lab(
+            project_root,
+            skill_name=skill_name,
+            workflow=workflow,
+            transcript=transcript,
+            failure=failure,
+            owner=owner,
+            overwrite=overwrite,
+        )
+
+    def run_factory_pipeline(
+        self,
+        project_root: str | Path,
+        *,
+        skill_name: str,
+        workflow: dict[str, Any] | None = None,
+        transcript: dict[str, Any] | None = None,
+        failure: dict[str, Any] | None = None,
+        owner: str = "agent-skill-platform",
+        overwrite: bool = True,
+    ) -> dict[str, Any]:
+        return run_factory_pipeline(
+            project_root,
+            skill_name=skill_name,
+            workflow=workflow,
+            transcript=transcript,
+            failure=failure,
+            owner=owner,
+            overwrite=overwrite,
+        )
 
     def publish_package(self, source: str | Path, *, registry_root: str | Path | None = None) -> dict[str, Any]:
         return publish_package(registry_root or self.registry_root(), source)
@@ -111,11 +185,44 @@ class AgentSkillPlatform:
     def build_registry_app(self, *, registry_root: str | Path | None = None) -> Any:
         return build_registry_app(registry_root or self.registry_root())
 
+    def build_engine_app(self, *, registry_root: str | Path | None = None) -> Any:
+        return build_engine_app(registry_root or self.registry_root())
+
     def list_registry_skills(self, *, registry_root: str | Path | None = None) -> list[dict[str, Any]]:
         return open_registry(registry_root or self.registry_root()).list_skills()
 
     def get_registry_skill(self, skill_id: str, *, registry_root: str | Path | None = None) -> dict[str, Any]:
         return open_registry(registry_root or self.registry_root()).get_skill(skill_id)
+
+    def get_registry_skill_projection(
+        self,
+        skill_id: str,
+        *,
+        version_id: str | None = None,
+        registry_root: str | Path | None = None,
+    ) -> dict[str, Any]:
+        return open_registry(registry_root or self.registry_root()).get_skill_projection(skill_id, version_id=version_id)
+
+    def list_registry_skill_projections(self, *, registry_root: str | Path | None = None) -> list[dict[str, Any]]:
+        return open_registry(registry_root or self.registry_root()).list_skill_projections()
+
+    def find_skill(
+        self,
+        query: str | dict[str, Any] | Any,
+        *,
+        registry_root: str | Path | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        return find_skill_request(registry_root or self.registry_root(), query, **kwargs)
+
+    def execute_skill(
+        self,
+        request: str | dict[str, Any] | Any,
+        *,
+        registry_root: str | Path | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        return execute_skill_request(registry_root or self.registry_root(), request, **kwargs)
 
     def list_kernel_plugins(self) -> dict[str, Any]:
         return list_plugins()

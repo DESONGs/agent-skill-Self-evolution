@@ -1,0 +1,99 @@
+{
+  "schema_version": "research.yaml.v1",
+  "project": {
+    "name": "${PROJECT_NAME}",
+    "description": "Prediction-market research project scaffold",
+    "workspace_dir": "./workspace",
+    "artifacts_dir": "./artifacts",
+    "runs_dir": "./.autoresearch/runs"
+  },
+  "pack": {
+    "id": "prediction_market",
+    "version": "latest",
+    "entry_profile": "default"
+  },
+  "data": {
+    "source": "${DATA_SOURCE}",
+    "format": "auto",
+    "adapter": "auto",
+    "snapshot_on_run": true,
+    "schema_map": {},
+    "filters": {},
+    "sampling": {
+      "mode": "fixed_count",
+      "max_records": 200,
+      "seed": 42
+    },
+    "split": {
+      "mode": "auto",
+      "train_ratio": null,
+      "validation_ratio": null,
+      "holdout_ratio": null
+    }
+  },
+  "objective": {
+    "primary": "maximize_pnl",
+    "secondary": ["maximize_accuracy", "minimize_drawdown"],
+    "direction": "maximize",
+    "stop_when": {
+      "metric": "",
+      "threshold": null
+    },
+    "notes": ""
+  },
+  "search": {
+    "mode": "self_iterate",
+    "editable_targets": ["workspace/strategy.py"],
+    "allowed_axes": [
+      "confidence_threshold",
+      "bet_sizing",
+      "max_bet_fraction",
+      "prompt_factors"
+    ],
+    "frozen_axes": [],
+    "max_iterations": 10,
+    "candidates_per_iteration": 3,
+    "mutation_policy": "single_target_patch",
+    "allow_prompt_edits": true,
+    "allow_feature_edits": true,
+    "allow_risk_edits": true
+  },
+  "evaluation": {
+    "sample_size": 200,
+    "search_repeats": 2,
+    "validation_repeats": 2,
+    "holdout_repeats": 1,
+    "gate_profile": "balanced",
+    "gate_overrides": {},
+    "emit_breakdowns": true
+  },
+  "constraints": {
+    "total_token_budget": 300000,
+    "per_eval_token_budget": 150000,
+    "max_completion_tokens": 1200,
+    "eval_timeout_seconds": 900,
+    "max_runtime_minutes": 0,
+    "max_memory_mb": 4096,
+    "max_cpu_seconds": 7200,
+    "allow_network": false,
+    "real_execution": false,
+    "preserve_run": false,
+    "retention_hours": 168
+  },
+  "runtime": {
+    "provider": "openai",
+    "model": "gpt-5.4",
+    "api_base_url": "",
+    "env_refs": ["OPENAI_API_KEY", "OPENAI_BASE_URL"],
+    "secret_refs": [],
+    "concurrency": 1
+  },
+  "outputs": {
+    "write_patch": true,
+    "write_report": true,
+    "write_dataset_profile": true,
+    "write_best_strategy": true,
+    "export_format": "json"
+  },
+  "pack_config": {}
+}

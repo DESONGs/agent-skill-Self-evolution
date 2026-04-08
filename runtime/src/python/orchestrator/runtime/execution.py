@@ -74,9 +74,13 @@ def build_action_catalog(installs: list[Any]) -> list[dict[str, Any]]:
                 "kind": action.kind.value,
                 "description": action.description,
                 "default": bundle.default_action == action.id,
+                "entry": action.entry,
+                "runtime": action.runtime,
+                "timeout_sec": action.timeout_sec,
                 "input_schema": action.input_schema,
                 "output_schema": action.output_schema,
                 "side_effects": list(action.side_effects),
+                "idempotency": action.idempotency,
                 "sandbox": action.sandbox,
                 "allow_network": action.allow_network,
             }

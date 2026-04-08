@@ -65,6 +65,21 @@ class RemoteRegistryService:
     def get_skill(self, skill_id: str) -> dict[str, Any]:
         return dict(self._request("GET", f"/skills/{skill_id}"))
 
+    def get_skill_projection(self, skill_id: str, version_id: str | None = None) -> dict[str, Any]:
+        query = urlencode({"version_id": version_id}) if version_id else ""
+        suffix = f"?{query}" if query else ""
+        return dict(self._request("GET", f"/skills/{skill_id}/projection{suffix}"))
+
+    def list_skill_projections(self) -> list[dict[str, Any]]:
+        payload = self._request("GET", "/skills/projections")
+        return list(payload or [])
+
+    def find_skill(self, request: dict[str, Any]) -> dict[str, Any]:
+        return dict(self._request("POST", "/find-skill", request))
+
+    def execute_skill(self, request: dict[str, Any]) -> dict[str, Any]:
+        return dict(self._request("POST", "/execute-skill", request))
+
 
 class RegistryAdapter:
     def __init__(
@@ -111,3 +126,15 @@ class RegistryAdapter:
 
     def get_skill(self, skill_id: str) -> dict[str, Any]:
         return self.backend.get_skill(skill_id)
+
+    def get_skill_projection(self, skill_id: str, version_id: str | None = None) -> dict[str, Any]:
+        return self.backend.get_skill_projection(skill_id, version_id=version_id)
+
+    def list_skill_projections(self) -> list[dict[str, Any]]:
+        return self.backend.list_skill_projections()
+
+    def find_skill(self, request: dict[str, Any]) -> dict[str, Any]:
+        return self.backend.find_skill(request)
+
+    def execute_skill(self, request: dict[str, Any]) -> dict[str, Any]:
+        return self.backend.execute_skill(request)

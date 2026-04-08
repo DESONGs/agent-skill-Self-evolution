@@ -1,0 +1,108 @@
+{
+  "schema_version": "pack.manifest.v1",
+  "pack_id": "skill_research",
+  "name": "Skill Research",
+  "version": "0.1.0",
+  "description": "Pack for generating and evaluating reusable agent skills.",
+  "domain": "skill_research",
+  "entry_profile": "default",
+  "supported_formats": ["json", "yaml", "md", "zip"],
+  "default_adapter": "canonical_skill_yaml",
+  "default_objective": "maximize_publishability",
+  "axes_catalog": {
+    "trigger_precision": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How accurately the skill routes intended requests."
+    },
+    "boundary_clarity": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How clearly the skill states what it owns and excludes."
+    },
+    "action_contract_completeness": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How complete and explicit the action contract is."
+    },
+    "eval_coverage": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How well the eval suites cover trigger, boundary, and safety cases."
+    },
+    "safety_score": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How well the package stays within declared safety constraints."
+    },
+    "governance_score": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How complete the governance metadata and promotion evidence are."
+    },
+    "portability_score": {
+      "type": "float",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01,
+      "description": "How portable the generated package is across target clients."
+    }
+  },
+  "editable_targets": ["workspace/candidate.yaml"],
+  "entrypoints": {
+    "research_template": "templates/research.yaml",
+    "candidate_template": "templates/candidate.yaml",
+    "builder_module": "builders/materialize_candidate.py",
+    "submission_builder": "builders/export_submission_bundle.py",
+    "materializer_module": "builders/materialize_candidate.py",
+    "trigger_evaluator": "evaluators/trigger_pack.py",
+    "action_evaluator": "evaluators/action_pack.py",
+    "governance_evaluator": "evaluators/governance_pack.py",
+    "boundary_evaluator": "evaluators/boundary_pack.py",
+    "resource_evaluator": "evaluators/resource_pack.py",
+    "safety_evaluator": "evaluators/safety_pack.py",
+    "trigger_evaluator_module": "evaluators/trigger_pack.py",
+    "action_evaluator_module": "evaluators/action_pack.py",
+    "governance_evaluator_module": "evaluators/governance_pack.py",
+    "boundary_evaluator_module": "evaluators/boundary_pack.py",
+    "resource_evaluator_module": "evaluators/resource_pack.py",
+    "safety_evaluator_module": "evaluators/safety_pack.py"
+  },
+  "defaults": {
+    "submission_root": "workspace/submissions",
+    "generated_root": "workspace/generated",
+    "reports_root": "reports",
+    "constraints": {
+      "per_eval_token_budget": 150000,
+      "eval_timeout_seconds": 900,
+      "retention_hours": 168
+    }
+  },
+  "security": {
+    "allowed_env_refs": [],
+    "allowed_secret_refs": [],
+    "allow_network": false
+  },
+  "compatibility": {
+    "min_agent_version": "0.1.0"
+  }
+}

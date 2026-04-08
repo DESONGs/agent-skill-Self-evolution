@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-03-31",
+  "targets": [
+    {
+      "label": "root",
+      "path": ".",
+      "budget_tier": "production",
+      "budget_limit": 1000,
+      "initial_tokens": 971,
+      "skill_body_tokens": 795,
+      "quality_density": 133.9,
+      "unused_resource_dirs": [],
+      "ok": true,
+      "warnings": []
+    },
+    {
+      "label": "complex-release-orchestrator",
+      "path": "examples/complex-release-orchestrator/generated-skill",
+      "budget_tier": "production",
+      "budget_limit": 1000,
+      "initial_tokens": 790,
+      "skill_body_tokens": 718,
+      "quality_density": 164.6,
+      "unused_resource_dirs": [],
+      "ok": true,
+      "warnings": []
+    },
+    {
+      "label": "governed-incident-command",
+      "path": "examples/governed-incident-command/generated-skill",
+      "budget_tier": "production",
+      "budget_limit": 1000,
+      "initial_tokens": 760,
+      "skill_body_tokens": 658,
+      "quality_density": 171.1,
+      "unused_resource_dirs": [],
+      "ok": true,
+      "warnings": []
+    }
+  ]
+}

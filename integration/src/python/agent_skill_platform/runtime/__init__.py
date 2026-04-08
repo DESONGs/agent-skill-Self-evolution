@@ -11,11 +11,11 @@ from ..bootstrap import ensure_source_layout
 ensure_source_layout()
 
 from orchestrator.runtime.envelope import RunFeedbackEnvelope
+from orchestrator.runtime.dispatcher import SkillRuntimeDispatcher
 from orchestrator.runtime.execution import scan_workspace_artifacts
 from orchestrator.runtime.feedback import RunFeedbackReporter
 from orchestrator.runtime.install import RuntimeInstallBundle, hydrate_skill_install
 from orchestrator.runtime.resolve import ActionResolver
-from orchestrator.runtime.runners import RunnerRegistry
 
 
 def build_runtime_install_bundle(
@@ -85,9 +85,9 @@ def run_runtime(
         resolver = ActionResolver(max_sandbox=max_sandbox, allow_network=allow_network)
         resolved_action = resolver.resolve_install(install, action_id=action_id)
         workspace_path = Path(workspace_dir).resolve() if workspace_dir is not None else install.mounted_path
-        runner_registry = RunnerRegistry()
+        dispatcher = SkillRuntimeDispatcher()
         result = asyncio.run(
-            runner_registry.run(
+            dispatcher.run(
                 resolved_action,
                 action_input,
                 workspace_dir=workspace_path,

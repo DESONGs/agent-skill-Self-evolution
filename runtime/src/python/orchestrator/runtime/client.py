@@ -54,10 +54,14 @@ class SkillClient:
             extra_args["disable-slash-commands"] = None
 
         self.options = ClaudeAgentOptions(
-            allowed_tools=allowed_tools or [
-                "Skill",
-                "Bash", "Read", "Write", "Glob", "Grep", "Edit"
-            ],
+            allowed_tools=(
+                [
+                    "Skill",
+                    "Bash", "Read", "Write", "Glob", "Grep", "Edit",
+                ]
+                if allowed_tools is None
+                else allowed_tools
+            ),
             disallowed_tools=final_disallowed,
             setting_sources=["project"] if needs_skills else [],
             permission_mode="default",

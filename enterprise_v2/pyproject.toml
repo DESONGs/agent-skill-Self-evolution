@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-skill-platform-enterprise-v2"
+version = "0.2.0"
+description = "Enterprise-oriented 8-person deployment profile for the Agent Skill Platform."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "alembic>=1.13.0",
+  "boto3>=1.35.0",
+  "fastapi>=0.115.0",
+  "psycopg[binary]>=3.2.0",
+  "pydantic>=2.0.0",
+  "PyYAML>=6.0.0",
+  "python-dotenv>=1.0.0",
+  "redis>=5.0.0",
+  "rq>=1.16.0",
+  "sqlalchemy>=2.0.0",
+  "uvicorn>=0.30.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.28.0",
+  "pytest>=8.0.0",
+]
+
+[project.scripts]
+asp-enterprise-api = "agent_skill_platform.registry.api:main"
+asp-enterprise-worker = "agent_skill_platform.jobs.worker:main"
+asp-enterprise-migrate = "agent_skill_platform.storage.postgres.session:migrate_schema"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "tests_v2", "integration/tests"]

@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field
 
 from orchestrator.runtime.envelope import RunFeedbackEnvelope
 
+from ..engine.api import register_engine_routes
+from ..engine.service import EngineService
 from ..models import PromotionSubmission
 from .service import RegistryService
 
@@ -34,6 +36,36 @@ class FeedbackEnvelopeModel(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class FindSkillFiltersModel(BaseModel):
+    skill_type: str | None = None
+    tags: list[str] = Field(default_factory=list)
+    owner: str | None = None
+    risk_level: str | None = None
+    official_only: bool | None = None
+    skill_ids: list[str] = Field(default_factory=list)
+
+
+class FindSkillRequestModel(BaseModel):
+    query: str = ""
+    limit: int = 5
+    filters: FindSkillFiltersModel = Field(default_factory=FindSkillFiltersModel)
+
+
+class ExecuteSkillRequestModel(BaseModel):
+    skill_id: str
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    action_id: str | None = None
+    version_id: str | None = None
+    trace_id: str | None = None
+    environment_profile: str | None = None
+    workspace_dir: str | None = None
+    run_id: str | None = None
+    install_root: str | None = None
+    env: dict[str, str] = Field(default_factory=dict)
+    max_sandbox: str | None = None
+    allow_network: bool = False
+
+
 def create_registry_app(root: str | Path) -> FastAPI:
     service = RegistryService(root)
     app = FastAPI(title="Agent Skill Platform Registry", version="0.1.0")
@@ -45,6 +77,14 @@ def create_registry_app(root: str | Path) -> FastAPI:
     @app.get("/skills")
     def list_skills() -> list[dict[str, Any]]:
         return service.list_skills()
+
+    @app.get("/skills/projections")
+    def list_skill_projections() -> list[dict[str, Any]]:
+        return service.list_skill_projections()
+
+    @app.get("/skills/{skill_id}/projection")
+    def get_skill_projection(skill_id: str, version_id: str | None = None) -> dict[str, Any]:
+        return service.get_skill_projection(skill_id, version_id=version_id)
 
     @app.get("/skills/{skill_id}")
     def get_skill(skill_id: str) -> dict[str, Any]:
@@ -67,5 +107,8 @@ def create_registry_app(root: str | Path) -> FastAPI:
     def submit_promotion(request: dict[str, Any]) -> dict[str, Any]:
         submission = PromotionSubmission(**request)
         return service.submit_promotion(submission)
+
+    engine_service = EngineService(service)
+    register_engine_routes(app, engine_service)
 
     return app
