@@ -1,0 +1,38 @@
+schema_version: agent.skill.platform.workspace.v1
+name: agent-skill-platform
+status: standalone-monorepo
+interfaces:
+  - actions.yaml
+  - RuntimeInstallBundle
+  - RunFeedbackEnvelope
+  - PromotionSubmission
+modules:
+  skill_contracts:
+    owner: Track A
+    source_root: src/skill_contract
+    public_api: src/agent_skill_platform/contracts
+  runtime:
+    owner: Track C
+    source_root: src/orchestrator/runtime
+    public_api: src/agent_skill_platform/runtime
+  environment_kernel:
+    owner: Track C
+    source_root:
+      - src/manager
+      - src/orchestrator
+      - src/workflow
+    public_api: src/agent_skill_platform/kernel
+  skill_lab:
+    owner: Track D
+    source_root: src/autoresearch_agent
+    public_api: src/agent_skill_platform/lab
+  registry:
+    owner: Track B
+    source_root: src/agent_skill_platform/registry
+    storage_root: .data/registry
+upstream_snapshot:
+  root: upstream_snapshot
+  purpose: reference-only
+docs:
+  root: docs
+  engineering: docs/engineering

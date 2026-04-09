@@ -1,0 +1,39 @@
+FROM python:3.11-slim
+
+ARG HTTP_PROXY=
+ARG HTTPS_PROXY=
+ARG http_proxy=
+ARG https_proxy=
+ARG NO_PROXY=localhost,127.0.0.1,::1
+ARG no_proxy=localhost,127.0.0.1,::1
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HTTP_PROXY= \
+    HTTPS_PROXY= \
+    http_proxy= \
+    https_proxy= \
+    NO_PROXY=localhost,127.0.0.1,::1 \
+    no_proxy=localhost,127.0.0.1,::1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml README.md /app/
+COPY docs /app/docs
+COPY registry /app/registry
+COPY src /app/src
+COPY integration /app/integration
+COPY contracts /app/contracts
+COPY runtime /app/runtime
+COPY lab /app/lab
+COPY factory /app/factory
+COPY tests_v2 /app/tests_v2
+COPY alembic.ini /app/alembic.ini
+COPY alembic /app/alembic
+COPY deploy /app/deploy
+
+RUN pip install --upgrade pip && pip install -e .
+
+CMD ["python", "-m", "agent_skill_platform.jobs.worker"]

@@ -1,0 +1,274 @@
+{
+  "optimizer_hints": {
+    "capability": "Create, refactor, evaluate, and package agent skills",
+    "inputs": [
+      "workflows",
+      "prompts",
+      "transcripts",
+      "docs",
+      "notes"
+    ],
+    "trigger_actions": [
+      "create a skill",
+      "turn a repeated process into a reusable skill",
+      "improve an existing skill",
+      "add evals",
+      "package a skill for team reuse"
+    ],
+    "exclusions": [
+      "summary-only requests",
+      "translation-only requests",
+      "plain documentation tasks",
+      "brainstorming without building a skill"
+    ],
+    "artifacts": [
+      "workflows",
+      "prompts",
+      "transcripts",
+      "docs",
+      "rough notes"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "build_skill",
+    "transform_workflow",
+    "reuse_package",
+    "eval_optimize",
+    "iterate_existing_skill"
+  ],
+  "positive_concepts": {
+    "build_skill": {
+      "weight": 0.34,
+      "phrases": [
+        "create a skill",
+        "build a skill",
+        "make a skill",
+        "generate a skill",
+        "agent skill",
+        "skill package",
+        "meta skill",
+        "meta-skill",
+        "turn this into a skill",
+        "turn all of that into one reusable skill package",
+        "codify this workflow",
+        "codify this routine",
+        "operationalize this workflow as a reusable skill",
+        "formalize this process into a reusable capability",
+        "turn this playbook into an agent capability package",
+        "convert this into a maintained skill"
+      ]
+    },
+    "transform_workflow": {
+      "weight": 0.2,
+      "phrases": [
+        "workflow",
+        "runbook",
+        "process",
+        "checklist",
+        "prompt history",
+        "operations checklist",
+        "internal process note",
+        "existing skill draft",
+        "rough notes",
+        "standard operating procedure",
+        "sop",
+        "transcript",
+        "workflow fragments",
+        "release notes",
+        "onboarding flow",
+        "support escalation routine",
+        "quarterly release routine"
+      ]
+    },
+    "reuse_package": {
+      "weight": 0.2,
+      "phrases": [
+        "reusable",
+        "reuse",
+        "package",
+        "packaging",
+        "distribution",
+        "share it with the team",
+        "team reuse",
+        "internal workflows",
+        "production-ready",
+        "library entry",
+        "shared capability",
+        "team library",
+        "ops library",
+        "maintained",
+        "operationalize"
+      ]
+    },
+    "eval_optimize": {
+      "weight": 0.16,
+      "phrases": [
+        "evals",
+        "trigger evals",
+        "near-neighbor",
+        "trigger boundary",
+        "benchmark",
+        "validation",
+        "validate",
+        "packaging checks",
+        "false positives",
+        "false negatives",
+        "stress test",
+        "route boundary",
+        "hardening"
+      ]
+    },
+    "iterate_existing_skill": {
+      "weight": 0.16,
+      "phrases": [
+        "improve an existing skill",
+        "existing skill",
+        "this skill",
+        "skill description",
+        "optimize skill triggering",
+        "package this skill",
+        "sharing it with the team",
+        "before sharing it with the team",
+        "tighten the boundary",
+        "revise this skill",
+        "draft skill",
+        "harden this skill for library reuse"
+      ]
+    },
+    "multi_asset": {
+      "weight": 0.06,
+      "phrases": [
+        "references",
+        "scripts",
+        "manifest",
+        "folder",
+        "directory",
+        "files"
+      ]
+    },
+    "team_operationalize": {
+      "weight": 0.04,
+      "phrases": [
+        "team",
+        "internal",
+        "standardize",
+        "shared",
+        "distribution",
+        "sharing it with the team",
+        "team reuse"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "explain_only": {
+      "weight": 0.26,
+      "exclusive": true,
+      "phrases": [
+        "explain what",
+        "just explain",
+        "explain it",
+        "explain this",
+        "in simpler language",
+        "tell me what it means",
+        "plain english"
+      ]
+    },
+    "summarize_only": {
+      "weight": 0.3,
+      "exclusive": true,
+      "phrases": [
+        "summary",
+        "summarize",
+        "only want a summary",
+        "recap"
+      ]
+    },
+    "translate_only": {
+      "weight": 0.35,
+      "exclusive": true,
+      "phrases": [
+        "translate",
+        "into japanese",
+        "into french",
+        "into russian"
+      ]
+    },
+    "brainstorm_only": {
+      "weight": 0.24,
+      "exclusive": true,
+      "phrases": [
+        "brainstorm",
+        "ideas",
+        "improve packaging",
+        "shape an idea"
+      ]
+    },
+    "one_off_request": {
+      "weight": 0.24,
+      "exclusive": true,
+      "phrases": [
+        "one-off",
+        "custom answer",
+        "for this request",
+        "just this task"
+      ]
+    },
+    "no_build_directive": {
+      "weight": 0.42,
+      "exclusive": true,
+      "phrases": [
+        "do not build",
+        "don't build",
+        "without building",
+        "do not generate any skill files",
+        "not a reusable skill",
+        "not as an agent skill",
+        "not an agent skill",
+        "without turning them into an agent skill",
+        "do not turn it into a skill",
+        "do not package it",
+        "stop short of making a full skill",
+        "not a skill yet",
+        "plain note",
+        "keep it as a plain note",
+        "no packaging needed",
+        "not for agent execution",
+        "no skill package",
+        "do not convert it into a reusable capability",
+        "keep it as documentation only",
+        "discussion only"
+      ]
+    },
+    "document_only": {
+      "weight": 0.18,
+      "exclusive": false,
+      "phrases": [
+        "readme",
+        "document",
+        "document package",
+        "reusable-looking document",
+        "wiki",
+        "article",
+        "blog title",
+        "headline",
+        "landing page",
+        "reference document",
+        "knowledge base",
+        "template only"
+      ]
+    },
+    "future_outline": {
+      "weight": 0.22,
+      "exclusive": true,
+      "phrases": [
+        "future skill",
+        "possible future skill",
+        "before we decide whether to build",
+        "outline for a possible future skill",
+        "maybe later",
+        "for later",
+        "future-ready outline"
+      ]
+    }
+  }
+}
